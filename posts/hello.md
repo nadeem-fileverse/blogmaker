@@ -4,7 +4,7 @@
 
 This is a blog post!
 
-Here's some code: LoLo
+Here's some code: Hello
 
 ```python
 def hello():
