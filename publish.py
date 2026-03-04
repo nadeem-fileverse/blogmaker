@@ -345,7 +345,7 @@ if __name__ == '__main__':
     print("Detected categories: {}".format(' '.join(categories)))
 
     sorted_metadatas = sorted(metadatas, key=lambda x: x['date'], reverse=True)
-    feed = generate_feed(global_config, sorted_metadatas)
+    feed = generate_feed(global_config, sorted_metadatas) if 'domain' in global_config else None
 
     os.system('mkdir -p {}'.format(os.path.join('site', 'categories')))
 
@@ -364,7 +364,8 @@ if __name__ == '__main__':
         toc = make_toc(category_toc_items, global_config, categories, category)
         open(os.path.join('site', 'categories', category+'.html'), 'w').write(toc)
 
-    open('site/feed.xml', 'w').write(feed)
+    if feed:
+        open('site/feed.xml', 'w').write(feed)
     open('site/index.html', 'w').write(make_toc(homepage_toc_items, global_config, categories))
 
     # Copy CSS and scripts files
