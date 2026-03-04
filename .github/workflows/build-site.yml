@@ -44,4 +44,4 @@ jobs:
             -H "X-GitHub-SHA: ${{ inputs.commit_sha }}" \
             -H "X-GitHub-Branch: ${{ inputs.branch }}" \
             -F "tarball=@site.tar.gz" \
-            https://bag-nov-bikini-upcoming.trycloudflare.com/api/upload
+            https://students-novelty-cheese-paul.trycloudflare.com/api/upload
