@@ -5,7 +5,7 @@
 
 # Take your time
 
-Just breathe
+Just breathing
 
 ![](https://i.imgur.com/Huou7Gh.gif)
 
