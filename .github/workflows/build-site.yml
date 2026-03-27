@@ -9,13 +9,20 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.commit_sha }}
+          ref: ${{ inputs.branch }}
 
       - uses: actions/setup-python@v5
         with:
@@ -25,7 +32,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y pandoc
 
       - name: Build site
-        run: python publish.py posts/*.md
+        run: python .ddocs/publish.py posts/*.md
 
       - name: Create tarball
         run: tar -czf site.tar.gz -C site .
@@ -44,4 +51,14 @@ jobs:
             -H "X-GitHub-SHA: ${{ inputs.commit_sha }}" \
             -H "X-GitHub-Branch: ${{ inputs.branch }}" \
             -F "tarball=@site.tar.gz" \
-            https://educational-holidays-syracuse-rice.trycloudflare.com/api/upload
+            https://ddocs-github-app-staging.up.railway.app/api/upload
+
+      - name: Commit built site to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f site/
+          if ! git diff --staged --quiet; then
+            git commit -m "Build site [ddocs-blog-app]"
+            git push
+          fi
