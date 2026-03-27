@@ -1,0 +1,152 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+
+
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="Illidan">
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']]
+  },
+  svg: {
+    fontCache: 'global',
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="../../../../scripts/tex-svg.js">
+</script>
+
+<style>
+</style>
+
+<div id="doc" class="container-fluid markdown-body comment-enabled" data-hard-breaks="true">
+
+<div id="color-mode-switch">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+  <input type="checkbox" id="switch" />
+  <label for="switch">Dark Mode Toggle</label>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+</div>
+
+<script type="text/javascript">
+  // Update root html class to set CSS colors
+  const toggleDarkMode = () => {
+    const root = document.querySelector('html');
+    root.classList.toggle('dark');
+  }
+
+  // Update local storage value for colorScheme
+  const toggleColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === 'light') localStorage.setItem('colorScheme', 'dark');
+    else localStorage.setItem('colorScheme', 'light');
+  }
+
+  // Set toggle input handler
+  const toggle = document.querySelector('#color-mode-switch input[type="checkbox"]');
+  if (toggle) toggle.onclick = () => {
+    toggleDarkMode();
+    toggleColorScheme();
+  }
+
+  // Check for color scheme on init
+  const checkColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === null || colorScheme === undefined) {
+      // No saved preference — use OS preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggle.checked = true;
+        toggleDarkMode();
+        localStorage.setItem('colorScheme', 'dark');
+      } else {
+        localStorage.setItem('colorScheme', 'light');
+      }
+    } else if (colorScheme === 'dark') {
+      toggle.checked = true;
+      toggleDarkMode();
+    }
+  }
+  checkColorScheme();
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Illidan" />
+<meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
+
+
+<br>
+<h1 style="margin-bottom:7px"> Illidan </h1>
+<small style="float:left; color: #888"> 2026 Mar 27 </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> Illidan </title>
+
+<p><strong>The Unyielding Lich King: A Study of Illidan
+Stormrage</strong></p>
+<p>In the vast expanse of the Warcraft universe, few characters embody
+the complexities and contradictions that define the nature of power as
+thoroughly as Illidan Stormrage. The son of Medivh and Tiraog, Illidan's
+story is one of tragedy, ambition, and the unyielding pursuit of his own
+destiny.</p>
+<p><strong>The Unbridled Ambition</strong></p>
+<p>Illidan's journey begins in the frozen tundras of Northrend, where he
+was born with a singular focus: to reclaim the power that had been lost
+to him. His father, Medivh, had once wielded the might of the Burning
+Legion, but his own hubris and arrogance had led to his downfall.
+Illidan vowed to follow in his footsteps, to surpass even his father's
+achievements.</p>
+<p>As he delved deeper into the mysteries of magic and power, Illidan
+became increasingly consumed by his own ambition. He saw himself as a
+visionary, a leader destined to shape the course of history. His
+fixation on the fel energy that coursed through Azeroth's veins drove
+him to make choices that would ultimately seal his fate.</p>
+<p><strong>The Corruption of Power</strong></p>
+<p>Illidan's descent into darkness was gradual, yet inexorable. As he
+continued to tap into the power of the fel, he began to lose himself to
+its corrupting influence. His actions became increasingly erratic,
+driven by a singular desire for dominance and control.</p>
+<p>It was during this period that Illidan encountered the Lich King,
+Arthas Menethil. The two formed an uneasy alliance, with Illidan serving
+as a key player in the Lich King's plans to spread darkness across
+Azeroth. This partnership would prove to be a turning point in Illidan's
+journey, as he was forced to confront the true nature of his own
+corruption.</p>
+<p><strong>The Unyielding Resolve</strong></p>
+<p>Despite the warnings and pleas of those around him, Illidan remained
+resolute in his pursuit of power. He saw himself as a necessary force,
+one who would bring order to a chaotic world through the application of
+his own brand of justice.</p>
+<p>In the end, it was this unyielding resolve that proved to be
+Illidan's downfall. His refusal to compromise or surrender led him down
+a path from which there was no return. The consequences of his actions
+were catastrophic, and the world of Azeroth would never be the same
+again.</p>
+<p><strong>Conclusion</strong></p>
+<p>Illidan Stormrage is a complex and nuanced character, driven by a
+singular focus that ultimately proved to be his undoing. His story
+serves as a cautionary tale about the dangers of unchecked ambition and
+the corrupting influence of power. As we reflect on his journey, we are
+reminded that even the most well-intentioned among us can fall prey to
+the very forces we seek to control.</p>
+<hr />
+<p><strong>References:</strong></p>
+<ul>
+<li>Warcraft III: Reign of Chaos</li>
+<li>World of Warcraft: The Burning Crusade</li>
+<li>Warcraft III: Wrath of the Lich King</li>
+</ul>
+ </div> 
