@@ -1,0 +1,136 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+
+
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="Math Two">
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']]
+  },
+  svg: {
+    fontCache: 'global',
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="../../../../scripts/tex-svg.js">
+</script>
+
+<style>
+</style>
+
+<div id="doc" class="container-fluid markdown-body comment-enabled" data-hard-breaks="true">
+
+<div id="color-mode-switch">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+  <input type="checkbox" id="switch" />
+  <label for="switch">Dark Mode Toggle</label>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+</div>
+
+<script type="text/javascript">
+  // Update root html class to set CSS colors
+  const toggleDarkMode = () => {
+    const root = document.querySelector('html');
+    root.classList.toggle('dark');
+  }
+
+  // Update local storage value for colorScheme
+  const toggleColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === 'light') localStorage.setItem('colorScheme', 'dark');
+    else localStorage.setItem('colorScheme', 'light');
+  }
+
+  // Set toggle input handler
+  const toggle = document.querySelector('#color-mode-switch input[type="checkbox"]');
+  if (toggle) toggle.onclick = () => {
+    toggleDarkMode();
+    toggleColorScheme();
+  }
+
+  // Check for color scheme on init
+  const checkColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === null || colorScheme === undefined) {
+      // No saved preference — use OS preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggle.checked = true;
+        toggleDarkMode();
+        localStorage.setItem('colorScheme', 'dark');
+      } else {
+        localStorage.setItem('colorScheme', 'light');
+      }
+    } else if (colorScheme === 'dark') {
+      toggle.checked = true;
+      toggleDarkMode();
+    }
+  }
+  checkColorScheme();
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Math Two" />
+<meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
+
+
+<br>
+<h1 style="margin-bottom:7px"> Math Two </h1>
+<small style="float:left; color: #888"> 2026 Mar 27 </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> Math Two </title>
+
+<h1 id="advanced-mathematical-notations">Advanced Mathematical
+Notations</h1>
+<h2 id="differential-equations-and-linear-algebra">Differential
+Equations and Linear Algebra</h2>
+<p>∂u/∂t + ∇⋅(α(t)u) = β(t)f(x,t), u(0,x) = g(x)</p>
+<p>∫[x^2 dx] / (1 - e^(ax)), a ≠ 0</p>
+<p> (<em>{-1}^{x} f(t) dt ) + </em>{-1}^{x} g(t) dt</p>
+<h2 id="calculus-and-analysis">Calculus and Analysis</h2>
+<p>∫[e<sup>(-x</sup>2) dx] / √(π), x ∈ ℝ</p>
+<p>_{n→∞} (1 + 1/n)^n = e, n ∈ ℕ</p>
+<p>∂/∂x (∂u/∂t) + ∇⋅(α(t)∇u) = β(t)f(x,t), u(0,x) = g(x)</p>
+<h2 id="number-theory-and-algebraic-geometry">Number Theory and
+Algebraic Geometry</h2>
+<p>(a_1,a_2,...,a_n) = _{i,j} |a_i - a_j|, n ∈ ℕ</p>
+<p>∫[x^3 dx] / (x^2 + 1), x ∈ ℝ</p>
+<p>(A) = <em>{i=1}^{n} (-1)^{i+1} a</em>{i1}M_{i1}, A ∈ M_n(R)</p>
+<h2 id="probability-theory-and-statistics">Probability Theory and
+Statistics</h2>
+<p>P(X = k) = P(k), X ∈ ℝ^m, k ∈ ℕ</p>
+<p>∫[e<sup>(x</sup>2) dx] / √(π), x ∈ ℝ</p>
+<p>[X] = _{i=1}^{n} p_i x_i, X ∈ ℝ^n, p_i ∈ [0,1]</p>
+<h2 id="functional-analysis-and-operator-theory">Functional Analysis and
+Operator Theory</h2>
+<p>T(x) = ∫[f(t) dt], T ∈ L^2(R), f ∈ L^2(R)</p>
+<p>|A| = _{|x|=1} |Ax|, A ∈ M_n(C), x ∈ ℝ^n</p>
+<p>∂/∂t (∂u/∂t) + ∇⋅(α(t)∇u) = β(t)f(x,t), u(0,x) = g(x)</p>
+<h2 id="mathematical-physics-and-signal-processing">Mathematical Physics
+and Signal Processing</h2>
+<p>(x) = _{-}^{x} f(t) dt, F ∈ L^1(R), x ∈ ℝ</p>
+<p>∫[e^(ixt) dx] / (1 - e^(iat)), t ∈ ℝ</p>
+<p>L(f(x)) = ∫[f(x + t) dx], L ∈ M_n(C), f ∈ L^2(R)</p>
+<h2 id="mathematical-biology-and-ecology">Mathematical Biology and
+Ecology</h2>
+<p> N(t) = rN(t) - aN(t)m, N(0) = N_0</p>
+<p>∂/∂t (∂u/∂t) + ∇⋅(α(t)∇u) = β(t)f(x,t), u(0,x) = g(x)</p>
+<h2 id="mathematical-finance-and-economics">Mathematical Finance and
+Economics</h2>
+<p>CDS(X) = e^(-rT) _{0}^{T} (dS_t)^2 dt, CDS ∈ M_n(C), X ∈ ℝ^n</p>
+ </div> 
