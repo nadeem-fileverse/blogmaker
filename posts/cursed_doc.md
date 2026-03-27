@@ -1,5 +1,5 @@
 [title]: <> (Cursed Doc)
-[date]: <> (2026/03/27)
+[date]: <> (2026/03/27T15:21:10.990Z)
 [category]: <> (general)
 
 **NO THINK**
