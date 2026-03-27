@@ -6,11 +6,11 @@
 
 
 
-<link rel="alternate" type="application/rss+xml" href="./feed.xml" title="Vitalik Buterin's website">
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="Idea 1:">
 
 
 
-<link rel="stylesheet" type="text/css" href="./css/main.css">
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
 
 <script>
 MathJax = {
@@ -23,7 +23,7 @@ MathJax = {
 };
 </script>
 <script type="text/javascript" id="MathJax-script" async
-  src="./scripts/tex-svg.js">
+  src="../../../../scripts/tex-svg.js">
 </script>
 
 <style>
@@ -84,82 +84,60 @@ MathJax = {
 </script>
 
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Vitalik Buterin's website" />
+<meta name="twitter:title" content="Idea 1:" />
 <meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
 
 
-<title> Vitalik Buterin's website </title>
 <br>
-<center><h1 style="border-bottom:0px"> Vitalik Buterin's website </h1></center>
+<h1 style="margin-bottom:7px"> Idea 1: </h1>
+<small style="float:left; color: #888"> 2026 Feb 03 </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> Idea 1: </title>
 
-<center><hr>
-<span class="toc-category" style="font-size:100%"><a href="./categories/general.html">General</a></span>
-<hr></center>
-
-<br>
-<ul class="post-list" style="padding-left:0">
-
-
-
-<li>
-    <span class="post-meta">2026 Mar 27</span>
-    <h3 style="margin-top:12px">
-      <a class="post-link" href="./posts/2026/03/27/state_of_wow.html">State Of WOW</a>
-    </h3>
-</li>
-
-
-
-<li>
-    <span class="post-meta">2026 Mar 09</span>
-    <h3 style="margin-top:12px">
-      <a class="post-link" href="./posts/2026/03/09/some-ways-to-use-zk-snarks-for-privacysdasdasdqweq.html">Some ways to use ZK-SNARKs for privacysdasdasdqweq</a>
-    </h3>
-</li>
-
-
-
-<li>
-    <span class="post-meta">2026 Mar 09</span>
-    <h3 style="margin-top:12px">
-      <a class="post-link" href="./posts/2026/03/09/take-your-time.html">Take your time</a>
-    </h3>
-</li>
-
-
-
-<li>
-    <span class="post-meta">2026 Feb 03</span>
-    <h3 style="margin-top:12px">
-      <a class="post-link" href="./posts/2026/02/03/idea-1.html">Idea 1:</a>
-    </h3>
-</li>
-
-
-
-<li>
-    <span class="post-meta">2026 Feb 03</span>
-    <h3 style="margin-top:12px">
-      <a class="post-link" href="./posts/2026/02/03/api-access-tech-spec.html">API Access Tech Spec</a>
-    </h3>
-</li>
-
-
-
-<li>
-    <span class="post-meta">2026 Jan 12</span>
-    <h3 style="margin-top:12px">
-      <a class="post-link" href="./posts/2026/01/12/to-do-list.html">📋 To-do List</a>
-    </h3>
-</li>
-
-
-
-<li>
-    <span class="post-meta">2020 Oct 24</span>
-    <h3 style="margin-top:12px">
-      <a class="post-link" href="./posts/2020/10/24/hello.html">Hello world</a>
-    </h3>
-</li>
-
- </ul> 
+<p>Idea 1:</p>
+<p><strong>Ephemeral Content Key + Static Envelope</strong></p>
+<ol type="1">
+<li><p>Encryption Flow</p>
+<ol type="1">
+<li>We have a static Link Key</li>
+<li>Generate Ephermal Secret → Wrapping Key → kdf_key - PBKDF2</li>
+<li>kdfKey encrypts content key(Penumbra Key) → encrypted_k_content</li>
+<li>Link Key encrypts the ephermal secret →
+encrypted_ephemeral_secret</li>
+<li>Content Key encrypts conten → encrypted_content</li>
+</ol></li>
+</ol>
+<p>Items to store in metadata</p>
+<pre class="plaintext"><code>{
+encrypted_k_content,
+encrypted_ephemeral_secret,
+iv1, iv2, iv3,
+salt used for PBKDF
+}</code></pre>
+<ol start="2" type="1">
+<li><p>Decryption Flow</p>
+<ol type="1">
+<li>Link Key decrypts encrypted_ephemeral_secret → ephermal_secret</li>
+<li>kdf_key is derived back from ephermal_secret → kdf_key</li>
+<li>kdf_key decrypts the encrypted_k_content → k_content</li>
+<li>k_content decrypts content</li>
+</ol></li>
+</ol>
+<p>In this whole flow the core problem remains same as IPFS hashes are
+available on public nodes any one can regenerate key meaning cant revoke
+past content access to doc</p>
+<p>===</p>
+<p>Idea 2</p>
+<p><strong>Versioned Key Derivation from Link Key</strong></p>
+<ol type="1">
+<li>Derive per version key → HMAC(LinkKey, vN) → kN</li>
+<li>Encrypt content Key (Penumbra Key) with kN</li>
+</ol>
+<p>On IPFS</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  version<span class="op">:</span> vN</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  iv<span class="op">:</span> <span class="dt">string</span><span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>encrypted_k_content<span class="op">:</span> <span class="dt">string</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+ </div> 

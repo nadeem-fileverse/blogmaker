@@ -1,0 +1,630 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+
+
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="API Access Tech Spec">
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']]
+  },
+  svg: {
+    fontCache: 'global',
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="../../../../scripts/tex-svg.js">
+</script>
+
+<style>
+</style>
+
+<div id="doc" class="container-fluid markdown-body comment-enabled" data-hard-breaks="true">
+
+<div id="color-mode-switch">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+  <input type="checkbox" id="switch" />
+  <label for="switch">Dark Mode Toggle</label>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+</div>
+
+<script type="text/javascript">
+  // Update root html class to set CSS colors
+  const toggleDarkMode = () => {
+    const root = document.querySelector('html');
+    root.classList.toggle('dark');
+  }
+
+  // Update local storage value for colorScheme
+  const toggleColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === 'light') localStorage.setItem('colorScheme', 'dark');
+    else localStorage.setItem('colorScheme', 'light');
+  }
+
+  // Set toggle input handler
+  const toggle = document.querySelector('#color-mode-switch input[type="checkbox"]');
+  if (toggle) toggle.onclick = () => {
+    toggleDarkMode();
+    toggleColorScheme();
+  }
+
+  // Check for color scheme on init
+  const checkColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === null || colorScheme === undefined) {
+      // No saved preference — use OS preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggle.checked = true;
+        toggleDarkMode();
+        localStorage.setItem('colorScheme', 'dark');
+      } else {
+        localStorage.setItem('colorScheme', 'light');
+      }
+    } else if (colorScheme === 'dark') {
+      toggle.checked = true;
+      toggleDarkMode();
+    }
+  }
+  checkColorScheme();
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="API Access Tech Spec" />
+<meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
+
+
+<br>
+<h1 style="margin-bottom:7px"> API Access Tech Spec </h1>
+<small style="float:left; color: #888"> 2026 Feb 03 </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> API Access Tech Spec </title>
+
+<h1 id="api-access-tech-spec">API Access Tech Spec</h1>
+<p>The idea behind api access is to have a peripheral portal, where file
+operations can be done via an external API, LLMs, local servers, etc.
+There are two main components for this setup</p>
+<ol type="1">
+<li><p><strong>Ddoc Frontend</strong></p>
+<ol type="1">
+<li>Deploys the peripheral portal</li>
+<li>Generates different associated keys</li>
+<li>Allows users to manage api keys</li>
+<li>Connects with the satellite package to list/show docs created via
+the api access</li>
+</ol></li>
+<li><p><strong>Satellite Package</strong>: IMP User needs to install
+this package for API access to work</p>
+<ol type="1">
+<li>It's a locally running server on users machine</li>
+<li>The user needs to install the package locally to be able to work
+with api access</li>
+<li>Acts as an interface for other outside APIs (LLms, external servers,
+etc.) that want to create/edit files</li>
+<li>Exposes list, read and other apis for the Ddoc frontend to
+consume</li>
+<li>Takes care of creating, editing, encrypting, and publishing a
+file</li>
+</ol></li>
+</ol>
+<h2 id="tech-specs-fe">Tech Specs FE</h2>
+<ol type="1">
+<li><p>Content Hash: <a
+href="https://github.com/fileverse/ddocs.new/blob/89294b1dc386a8466b689156c2f3ad173659ee8f/utils/content-hash/maps.ts">Update
+in</a></p>
+<ol type="1">
+<li>Code Name = <code>apiportal+ipfsenc://</code></li>
+<li>Name to Varint = <code>Uint8Array.from([11])</code></li>
+</ol></li>
+<li><p>Some important Functions</p></li>
+</ol>
+<p>Registry Address:</p>
+<ol type="1">
+<li>Sepolia:
+<code>0xbE1133bcDDCa3058fe641eb10A115CE8B6632213</code></li>
+<li>Gnosis: <code>0x94b1Eca21D327C4966F8F7547e2c21bDBd950b40</code></li>
+</ol>
+<p><strong>Mint Api Access Portal</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> mintApiAccessPortal <span class="op">=</span> <span class="kw">async</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> ownerEdKeyPair <span class="op">=</span> <span class="cf">await</span> <span class="fu">generateRandomUcanEdKeyPair</span>()<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// ed secret</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> ownerSecret <span class="op">=</span> <span class="cf">await</span> ownerEdKeyPair<span class="op">.</span><span class="fu">export</span>()<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">// owner did</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> ownerDid <span class="op">=</span> ownerEdKeyPair<span class="op">.</span><span class="fu">did</span>()<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> portalSeed <span class="op">=</span> <span class="fu">generateRandomBytes</span>(<span class="dv">24</span>)<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> { publicKey<span class="op">,</span> privateKey } <span class="op">=</span> <span class="fu">generateECKeyPair</span>()<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> keyVerifiers <span class="op">=</span> <span class="fu">getPortalKeyVerifiers</span>({</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    appEncryptionKey<span class="op">:</span> publicKey<span class="op">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    appDecryptionKey<span class="op">:</span> privateKey<span class="op">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> encodedCallData <span class="op">=</span> <span class="fu">encodeFunctionData</span>({</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">RegistryAppKey</span>]<span class="op">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> ContractMethod<span class="op">.</span><span class="at">Mint</span><span class="op">,</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    args<span class="op">:</span> [</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      PORTAL_METADATA_IPFS_HASH<span class="op">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>      ownerDid<span class="op">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>      keyVerifiers<span class="op">.</span><span class="at">appEncryptionKeyVerifier</span><span class="op">,</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      keyVerifiers<span class="op">.</span><span class="at">appDecryptionKeyVerifier</span><span class="op">,</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    ]<span class="op">,</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> receipt <span class="op">=</span> <span class="cf">await</span> AgentInstance<span class="op">.</span><span class="fu">executeUserOperationRequest</span>({</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    data<span class="op">:</span> encodedCallData<span class="op">,</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    contractAddress<span class="op">:</span> REGISTRY_CONTRACT_ADDRESS<span class="op">,</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span> DEFAULT_TIMEOUT)<span class="op">;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>receipt<span class="op">.</span><span class="at">success</span>) {</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Failed to mint api access portal&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> parsedLog <span class="op">=</span> <span class="fu">parseEventLogs</span>({</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">RegistryAppKey</span>]<span class="op">,</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    eventName<span class="op">:</span> PortalContractEvent<span class="op">.</span><span class="at">Mint</span><span class="op">,</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    logs<span class="op">:</span> receipt<span class="op">.</span><span class="at">logs</span><span class="op">,</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (parsedLog<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) {</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;No Portal Mint Event Found (userOpHash: ${receipt.userOpHash})&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> portalAddress <span class="op">=</span> (parsedLog[<span class="dv">0</span>]<span class="op">?.</span><span class="at">args</span> <span class="im">as</span> <span class="dt">any</span>)<span class="op">?.</span><span class="at">app</span> <span class="im">as</span> Hex<span class="op">;</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>portalAddress) {</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Portal address not found in Mint event&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>    owner<span class="op">:</span> AgentInstance<span class="op">.</span><span class="fu">getAgentAddress</span>()<span class="op">,</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>    portalAddress<span class="op">,</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>    credentials<span class="op">:</span> {</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>      ownerDid<span class="op">,</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>      ownerSecret<span class="op">,</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>    appKeys<span class="op">:</span> {</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>      appEncryptionKey<span class="op">:</span> <span class="fu">fromUint8Array</span>(publicKey)<span class="op">,</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>      appDecryptionKey<span class="op">:</span> <span class="fu">fromUint8Array</span>(privateKey)<span class="op">,</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>    portalKeySeed<span class="op">:</span> <span class="fu">fromUint8Array</span>(portalSeed)<span class="op">,</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Check If Api key portal is already deployed</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// Get all address in the keystore</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> getKeyStoreAddresses <span class="op">=</span> <span class="kw">async</span> (</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  walletAddress<span class="op">:</span> Hex<span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  identityModuleAddress<span class="op">:</span> Hex</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> response <span class="op">=</span> <span class="cf">await</span> publicClient<span class="op">.</span><span class="fu">readContract</span>({</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> IDENTITY_MODULE_ABI<span class="op">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    address<span class="op">:</span> identityModuleAddress<span class="op">,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> IdentityModuleMethod<span class="op">.</span><span class="at">GetKeyStoreAddresses</span><span class="op">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    account<span class="op">:</span> walletAddress<span class="op">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> response <span class="im">as</span> Hex[]<span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> getApiKeyStoreFromContract <span class="op">=</span> <span class="kw">async</span> (</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  keyStoreAddresses<span class="op">:</span> Hex[]<span class="op">,</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  walletAddress<span class="op">:</span> Hex<span class="op">,</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  identityModuleAddress<span class="op">:</span> Hex</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> response <span class="op">=</span> (<span class="cf">await</span> publicClient<span class="op">.</span><span class="fu">readContract</span>({</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> IDENTITY_MODULE_ABI<span class="op">,</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    address<span class="op">:</span> identityModuleAddress<span class="op">,</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> IdentityModuleMethod<span class="op">.</span><span class="at">GetIdentityModuleKeyStoreDetails</span><span class="op">,</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    args<span class="op">:</span> [keyStoreAddresses]<span class="op">,</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    account<span class="op">:</span> walletAddress<span class="op">,</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  })) <span class="im">as</span> Hex[]<span class="op">;</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> response<span class="op">.</span><span class="at">length</span><span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> hash <span class="op">=</span> response[i]<span class="op">;</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> address <span class="op">=</span> keyStoreAddresses[i]<span class="op">;</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (ContentHash<span class="op">.</span><span class="fu">isOfType</span>(hash<span class="op">,</span> <span class="st">&quot;apiportal+ipfsenc://&quot;</span>)) {</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> encryptedHash <span class="op">=</span> ContentHash<span class="op">.</span><span class="fu">decode</span>(hash)<span class="op">;</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> decryptedHash <span class="op">=</span> <span class="fu">bytesToString</span>(</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        <span class="cf">await</span> IdentityInstance<span class="op">.</span><span class="fu">decryptEnvelope</span>(encryptedHash)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>      )<span class="op">;</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> {</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        address<span class="op">:</span> address<span class="op">,</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        hash<span class="op">:</span> decryptedHash</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">undefined</span><span class="op">;</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p><strong>Remove Collaborator</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> removeCollaboratorKeysCall <span class="op">=</span> <span class="kw">async</span> (collaboratorAgent<span class="op">:</span> AgentClient<span class="op">,</span> appAddress<span class="op">:</span> Hex) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> callData <span class="op">=</span> <span class="fu">encodeFunctionData</span>({</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">PortalAppKey</span>]<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> <span class="st">&#39;removeCollaboratorKeys&#39;</span><span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    args<span class="op">:</span> []<span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> receipt <span class="op">=</span> <span class="cf">await</span> collaboratorAgent<span class="op">.</span><span class="fu">executeUserOperationRequest</span>({</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    data<span class="op">:</span> callData<span class="op">,</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    contractAddress<span class="op">:</span> appAddress<span class="op">,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span> DEFAULT_TIMEOUT)<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>receipt<span class="op">.</span><span class="at">success</span>) {</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Failed to remove collaborator keys&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> parsedLog <span class="op">=</span> <span class="fu">parseEventLogs</span>({</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">PortalAppKey</span>]<span class="op">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    eventName<span class="op">:</span> PortalContractEvent<span class="op">.</span><span class="at">RemovedCollaboratorKeys</span><span class="op">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    logs<span class="op">:</span> receipt<span class="op">.</span><span class="at">logs</span><span class="op">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (parsedLog<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) {</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Failed to remove collaborator keys&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> { userOpHash<span class="op">:</span> receipt<span class="op">.</span><span class="at">userOpHash</span> }<span class="op">;</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> removeCollaboratorCall <span class="op">=</span> <span class="kw">async</span> (appAddress<span class="op">:</span> Hex<span class="op">,</span> collaboratorAddress<span class="op">:</span> Hex) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> existingCollaborators <span class="op">=</span> <span class="cf">await</span> publicClient<span class="op">.</span><span class="fu">readContract</span>({</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    address<span class="op">:</span> appAddress<span class="op">,</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">PortalAppKey</span>]<span class="op">,</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> <span class="st">&#39;getCollaborators&#39;</span><span class="op">,</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  }) <span class="im">as</span> Hex[]<span class="op">;</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>existingCollaborators<span class="op">.</span><span class="fu">includes</span>(collaboratorAddress)) {</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Collaborator not found&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  <span class="co">// find previous collaborator address, meaning the collaborator just before the collaborator to be removed</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> previousCollaboratorAddress <span class="op">=</span> existingCollaborators[existingCollaborators<span class="op">.</span><span class="fu">indexOf</span>(collaboratorAddress) <span class="op">-</span> <span class="dv">1</span>]<span class="op">;</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> callData <span class="op">=</span> <span class="fu">encodeFunctionData</span>({</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">PortalAppKey</span>]<span class="op">,</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> <span class="st">&#39;removeCollaborator&#39;</span><span class="op">,</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    args<span class="op">:</span> [previousCollaboratorAddress<span class="op">,</span> collaboratorAddress]<span class="op">,</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> receipt <span class="op">=</span> <span class="cf">await</span> AgentInstance<span class="op">.</span><span class="fu">executeUserOperationRequest</span>({</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    data<span class="op">:</span> callData<span class="op">,</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    contractAddress<span class="op">:</span> appAddress<span class="op">,</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span> DEFAULT_TIMEOUT)<span class="op">;</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>receipt<span class="op">.</span><span class="at">success</span>) {</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Failed to remove collaborator&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> { userOpHash<span class="op">:</span> receipt<span class="op">.</span><span class="at">userOpHash</span> }<span class="op">;</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Register Collaborator</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> registerCollaborator <span class="op">=</span> <span class="kw">async</span> (args<span class="op">:</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  portalAddress<span class="op">:</span> Hex<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  privateAccountKey<span class="op">:</span> <span class="bu">Uint8Array</span><span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  collaboratorDid<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>}) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> collaboratorAgent <span class="op">=</span> <span class="kw">new</span> <span class="fu">AgentClient</span>()<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">await</span> collaboratorAgent<span class="op">.</span><span class="fu">initializeAgentClient</span>(args<span class="op">.</span><span class="at">privateAccountKey</span>)<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">//Function already in code</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">await</span> <span class="fu">addCollaboratorCall</span>({</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    appAddress<span class="op">:</span> args<span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    collaboratorAddress<span class="op">:</span> collaboratorAgent<span class="op">.</span><span class="fu">getAgentAddress</span>()<span class="op">,</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">await</span> <span class="fu">registerCollaboratorKeysCall</span>(collaboratorAgent<span class="op">,</span> {</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    appAddress<span class="op">:</span> args<span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    collaboratorDid<span class="op">:</span> args<span class="op">.</span><span class="at">collaboratorDid</span><span class="op">,</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> collaboratorAgent<span class="op">;</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p><strong>Register Collaborator Keys</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> registerCollaboratorKeysCall <span class="op">=</span> <span class="kw">async</span> (collaboratorAgent<span class="op">:</span> AgentClient<span class="op">,</span> args<span class="op">:</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  appAddress<span class="op">:</span> Hex<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  collaboratorDid<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>}) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> callData <span class="op">=</span> <span class="fu">encodeFunctionData</span>({</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">PortalAppKey</span>]<span class="op">,</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> ContractMethod<span class="op">.</span><span class="at">RegisterCollaboratorKeys</span><span class="op">,</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    args<span class="op">:</span> [args<span class="op">.</span><span class="at">collaboratorDid</span>]<span class="op">,</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> receipt <span class="op">=</span> <span class="cf">await</span> collaboratorAgent<span class="op">.</span><span class="fu">executeUserOperationRequest</span>({</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    data<span class="op">:</span> callData<span class="op">,</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    contractAddress<span class="op">:</span> args<span class="op">.</span><span class="at">appAddress</span><span class="op">,</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span> DEFAULT_TIMEOUT)<span class="op">;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>receipt<span class="op">.</span><span class="at">success</span>) {</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Failed to register collaborator keys&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> parsedLog <span class="op">=</span> <span class="fu">parseEventLogs</span>({</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> CONTRACT_ABI_MAP[ContractType<span class="op">.</span><span class="at">PortalAppKey</span>]<span class="op">,</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    eventName<span class="op">:</span> PortalContractEvent<span class="op">.</span><span class="at">RegisteredCollaboratorKeys</span><span class="op">,</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    logs<span class="op">:</span> receipt<span class="op">.</span><span class="at">logs</span><span class="op">,</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (parsedLog<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) {</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Failed to register collaborator keys&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> { userOpHash<span class="op">:</span> receipt<span class="op">.</span><span class="at">userOpHash</span> }<span class="op">;</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Derive Collaborator Key Material</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> deriveCollaboratorMaterial <span class="op">=</span> (apiKeySeed<span class="op">:</span> <span class="bu">Uint8Array</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> salt <span class="op">=</span> <span class="kw">new</span> <span class="bu">Uint8Array</span>([<span class="dv">0</span>])<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> privateAccountKey <span class="op">=</span> <span class="fu">deriveHKDFKey</span>(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    apiKeySeed<span class="op">,</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    salt<span class="op">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stringToBytes</span>(<span class="st">&#39;COLLABORATOR_PRIVATE_KEY&#39;</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> collaboratorDerivedUcanSecret <span class="op">=</span> <span class="fu">deriveHKDFKey</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    apiKeySeed<span class="op">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    salt<span class="op">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stringToBytes</span>(<span class="st">&#39;COLLABORATOR_UCAN_SECRET&#39;</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> { secretKey<span class="op">:</span> ucanSecret } <span class="op">=</span> <span class="fu">generateKeyPairFromSeed</span>(collaboratorDerivedUcanSecret)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> edKeyPair <span class="op">=</span> ucans<span class="op">.</span><span class="at">EdKeypair</span><span class="op">.</span><span class="fu">fromSecretKey</span>(<span class="fu">fromUint8Array</span>(ucanSecret)<span class="op">,</span> {</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    exportable<span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> collaboratorDid <span class="op">=</span> edKeyPair<span class="op">.</span><span class="fu">did</span>()<span class="op">;</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> { privateAccountKey<span class="op">,</span> collaboratorDid }<span class="op">;</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p><strong>Buld Api Key Store JSON</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> buildApiKeyStoreJson <span class="op">=</span> <span class="kw">async</span> (args<span class="op">:</span> {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  portalKeySeed<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  apiKeys<span class="op">:</span> <span class="dt">unknown</span><span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  portalAddress<span class="op">:</span> Hex<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  ownerDid<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  ownerSecret<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  appDecryptionKey<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  enabled<span class="op">:</span> <span class="dt">boolean</span><span class="op">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>}) <span class="kw">=&gt;</span> {</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    portalKeySeed<span class="op">:</span> <span class="cf">await</span> IdentityInstance<span class="op">.</span><span class="fu">encryptEnvelope</span>(</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">toUint8Array</span>(args<span class="op">.</span><span class="at">portalKeySeed</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    )<span class="op">,</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    apiKeys<span class="op">:</span> <span class="cf">await</span> IdentityInstance<span class="op">.</span><span class="fu">encryptEnvelope</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">stringToBytes</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(args<span class="op">.</span><span class="at">apiKeys</span>))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    )<span class="op">,</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    portalAddress<span class="op">:</span> args<span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    ownerDid<span class="op">:</span> args<span class="op">.</span><span class="at">ownerDid</span><span class="op">,</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    encryptedOwnerSecret<span class="op">:</span> <span class="cf">await</span> IdentityInstance<span class="op">.</span><span class="fu">encryptEnvelope</span>(</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">toUint8Array</span>(args<span class="op">.</span><span class="at">ownerSecret</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    )<span class="op">,</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    encryptedAppDecryptionKey<span class="op">:</span> <span class="cf">await</span> IdentityInstance<span class="op">.</span><span class="fu">encryptEnvelope</span>(</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">toUint8Array</span>(args<span class="op">.</span><span class="at">appDecryptionKey</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    )<span class="op">,</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    enabled<span class="op">:</span> args<span class="op">.</span><span class="at">enabled</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  }<span class="op">;</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p><strong>Update Api Key Store</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="kw">const</span> updateApiKeyStore <span class="op">=</span> <span class="kw">async</span> (args<span class="op">:</span> {</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  portalAddress<span class="op">:</span> Hex<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  ipfsHash<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  contentHashName<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>}) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> encryptedKeyStoreIPFS <span class="op">=</span> <span class="cf">await</span> IdentityInstance<span class="op">.</span><span class="fu">encryptEnvelope</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stringToBytes</span>(args<span class="op">.</span><span class="at">ipfsHash</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> callData <span class="op">=</span> <span class="fu">encodeFunctionData</span>({</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> IDENTITY_MODULE_ABI<span class="op">,</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    functionName<span class="op">:</span> IdentityModuleMethod<span class="op">.</span><span class="at">UpdateKeyStoreContract</span><span class="op">,</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    args<span class="op">:</span> [</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>      ContentHash<span class="op">.</span><span class="fu">encode</span>(args<span class="op">.</span><span class="at">contentHashName</span><span class="op">,</span> encryptedKeyStoreIPFS)<span class="op">,</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>      args<span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    ]<span class="op">,</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> receipt <span class="op">=</span> <span class="cf">await</span> AgentInstance<span class="op">.</span><span class="fu">executeUserOperationRequest</span>(</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>      data<span class="op">:</span> callData<span class="op">,</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>      contractAddress<span class="op">:</span> IdentityInstance<span class="op">.</span><span class="fu">getIdentityAddress</span>()<span class="op">,</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    DEFAULT_TIMEOUT</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>receipt<span class="op">.</span><span class="at">success</span>) {</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Failed to update keystore data&#39;</span>)<span class="op">;</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> parsedLogs <span class="op">=</span> <span class="fu">parseEventLogs</span>({</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    abi<span class="op">:</span> IDENTITY_MODULE_ABI<span class="op">,</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    eventName<span class="op">:</span> <span class="st">&#39;UpdateKeyStoreContract&#39;</span><span class="op">,</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    logs<span class="op">:</span> receipt<span class="op">.</span><span class="at">logs</span><span class="op">,</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (parsedLogs<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">0</span>) {</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>      <span class="vs">`No UpdateKeyStoreContract Event Found (userOpHash: </span><span class="sc">${</span>receipt<span class="op">.</span><span class="at">userOpHash</span><span class="sc">}</span><span class="vs">)`</span></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">//Base Key Store interface = Same as NewKeyStore</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> BaseKeyStore {</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  portalAddress<span class="op">:</span> Hex<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  ownerDid<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  ownerSecret<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  appEncryptionKey<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  appDecryptionKey<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> ApiKeyInfo {</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  apiKeySeed<span class="op">:</span> <span class="dt">string</span><span class="op">;</span> <span class="co">//base64 string</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  collaboratorAddress<span class="op">:</span> Hex<span class="op">;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  name<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  createdAt<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> ApiAccessKeyStore <span class="kw">extends</span> BaseKeyStore {</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  portalKeySeed<span class="op">:</span> <span class="dt">string</span><span class="op">;</span> <span class="co">// Uint8Array to urlSafe base64 String also encrypted</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  apiKeys<span class="op">:</span> ApiKeyInfo[]<span class="op">;</span> <span class="co">// when store on key store whole array is encrypted</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  enabled<span class="op">:</span> <span class="dt">boolean</span><span class="op">;</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">// Exact class</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ApiKeyStore {</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> portalAddress<span class="op">:</span> Hex<span class="op">;</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> ownerDid<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> ownerSecret<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> appEncryptionKey<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> appDecryptionKey<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> ucanToken<span class="op">?:</span> <span class="dt">string</span><span class="op">;</span> <span class="co">// Not necessary I guess</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>  <span class="co">// new fields</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>  <span class="kw">private</span> portalKeySeed<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>  apiKeys<span class="op">:</span> ApiKeyInfo[]<span class="op">;</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>  <span class="kw">constructor</span>(keyStoreData<span class="op">:</span> ApiAccessKeyStore){}</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Boiler plate code</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">getPortalAddress</span>()<span class="op">:</span> Hex {}</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>  <span class="kw">async</span> <span class="fu">encryptData</span>(data<span class="op">:</span> <span class="bu">Uint8Array</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>{</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> <span class="fu">eciesEncrypt</span>(<span class="fu">toBytes</span>(<span class="kw">this</span><span class="op">.</span><span class="at">appEncryptionKey</span>)<span class="op">,</span> data)<span class="op">;</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>  <span class="kw">async</span> <span class="fu">decryptData</span>(data<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span> {</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fu">eciesDecrypt</span>(<span class="fu">toBytes</span>(<span class="kw">this</span><span class="op">.</span><span class="at">appDecryptionKey</span>)<span class="op">,</span> data)<span class="op">;</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Api access keystore specific methods</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">getApiKeyDetails</span>(name<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> ApiKeyInfo {</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>   <span class="co">// filter this.apiKeys by name</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>  } </span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>   <span class="kw">async</span> <span class="fu">addNewApiKey</span>(name<span class="op">:</span> <span class="dt">string</span>) {</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">apiKeys</span><span class="op">.</span><span class="fu">find</span>(key <span class="kw">=&gt;</span> key<span class="op">.</span><span class="at">name</span> <span class="op">===</span> name)) {</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>      <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Api key already exists&#39;</span>)<span class="op">;</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> apiKeySeed <span class="op">=</span> <span class="fu">generateRandomBytes</span>(<span class="dv">32</span>)</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> { privateAccountKey<span class="op">,</span> collaboratorDid } <span class="op">=</span> <span class="fu">deriveCollaboratorMaterial</span>(apiKeySeed)<span class="op">;</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> collaboratorAgent <span class="op">=</span> <span class="cf">await</span> <span class="fu">registerCollaborator</span>({</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>      portalAddress<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>      privateAccountKey<span class="op">,</span></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>      collaboratorDid<span class="op">,</span></span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> newApiKeyInfo <span class="op">=</span> {</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>      apiKeySeed<span class="op">:</span> <span class="fu">fromUint8Array</span>(apiKeySeed<span class="op">,</span> <span class="kw">true</span>)<span class="op">,</span></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>      collaboratorAddress<span class="op">:</span> collaboratorAgent<span class="op">.</span><span class="fu">getAgentAddress</span>()<span class="op">,</span></span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>      name<span class="op">:</span> name<span class="op">,</span></span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>      createdAt<span class="op">:</span> <span class="bu">Date</span><span class="op">.</span><span class="fu">now</span>()<span class="op">,</span></span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> newApiKeys <span class="op">=</span> [<span class="op">...</span><span class="kw">this</span><span class="op">.</span><span class="at">apiKeys</span><span class="op">,</span> newApiKeyInfo]<span class="op">;</span></span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> apiKeyStoreJSON <span class="op">=</span> <span class="cf">await</span> <span class="fu">buildApiKeyStoreJson</span>({</span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>      portalKeySeed<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalKeySeed</span><span class="op">,</span></span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a>      apiKeys<span class="op">:</span> newApiKeys<span class="op">,</span></span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a>      portalAddress<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>      ownerDid<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">ownerDid</span><span class="op">,</span></span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>      ownerSecret<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">ownerSecret</span><span class="op">,</span></span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>      appDecryptionKey<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">appDecryptionKey</span><span class="op">,</span></span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> ipfsHash <span class="op">=</span> <span class="cf">await</span> <span class="fu">uploadApiKeyStore</span>(apiKeyStoreJSON)<span class="op">;</span></span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a>    <span class="cf">await</span> <span class="fu">updateApiKeyStore</span>({</span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a>      portalAddress<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a>      ipfsHash<span class="op">,</span></span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>      contentHashName<span class="op">:</span> <span class="st">&#39;apiportal+ipfsenc://&#39;</span><span class="op">,</span></span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">apiKeys</span> <span class="op">=</span> newApiKeys<span class="op">;</span></span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>    <span class="co">// call satellite package to save the api key info</span></span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a>    <span class="co">// update indexeDB cache</span></span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a>  <span class="kw">async</span> <span class="fu">removeApiKey</span>(name<span class="op">:</span> <span class="dt">string</span>){</span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a>     <span class="kw">const</span> apiKeyInfo <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">apiKeys</span><span class="op">.</span><span class="fu">find</span>(key <span class="kw">=&gt;</span> key<span class="op">.</span><span class="at">name</span> <span class="op">===</span> name)</span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>apiKeyInfo) {</span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a>      <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Api key not found&#39;</span>)<span class="op">;</span></span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> { privateAccountKey } <span class="op">=</span> <span class="fu">deriveCollaboratorMaterial</span>(<span class="fu">toBytes</span>(apiKeyInfo<span class="op">.</span><span class="at">apiKeySeed</span>))<span class="op">;</span></span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> collaboratorAgent <span class="op">=</span> <span class="kw">new</span> <span class="fu">AgentClient</span>()<span class="op">;</span></span>
+<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a>    <span class="cf">await</span> collaboratorAgent<span class="op">.</span><span class="fu">initializeAgentClient</span>(privateAccountKey)<span class="op">;</span></span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a>    <span class="cf">await</span> <span class="fu">removeCollaboratorKeysCall</span>(collaboratorAgent<span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalAddress</span>)<span class="op">;</span></span>
+<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a>    <span class="cf">await</span> <span class="fu">removeCollaboratorCall</span>(<span class="kw">this</span><span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span> apiKeyInfo<span class="op">.</span><span class="at">collaboratorAddress</span>)<span class="op">;</span></span>
+<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">apiKeys</span> <span class="op">=</span> <span class="kw">this</span><span class="op">.</span><span class="at">apiKeys</span><span class="op">.</span><span class="fu">filter</span>(key <span class="kw">=&gt;</span> key<span class="op">.</span><span class="at">name</span> <span class="op">!==</span> name)<span class="op">;</span></span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> apiKeyStoreJSON <span class="op">=</span> <span class="cf">await</span> <span class="fu">buildApiKeyStoreJson</span>({</span>
+<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a>      portalKeySeed<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalKeySeed</span><span class="op">,</span></span>
+<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a>      apiKeys<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">apiKeys</span><span class="op">,</span></span>
+<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a>      portalAddress<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a>      ownerDid<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">ownerDid</span><span class="op">,</span></span>
+<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a>      ownerSecret<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">ownerSecret</span><span class="op">,</span></span>
+<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a>      appDecryptionKey<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">appDecryptionKey</span><span class="op">,</span></span>
+<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> ipfsHash <span class="op">=</span> <span class="cf">await</span> <span class="fu">uploadApiKeyStore</span>(apiKeyStoreJSON)<span class="op">;</span></span>
+<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a>    <span class="cf">await</span> <span class="fu">updateApiKeyStore</span>({</span>
+<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a>      portalAddress<span class="op">:</span> <span class="kw">this</span><span class="op">.</span><span class="at">portalAddress</span><span class="op">,</span></span>
+<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a>      ipfsHash<span class="op">,</span></span>
+<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a>      contentHashName<span class="op">:</span> <span class="st">&#39;apiportal+ipfsenc://&#39;</span><span class="op">,</span></span>
+<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a>    <span class="co">// call satellite package to remove api key from satellite</span></span>
+<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a>    <span class="co">// await removeApiKeyFromSatellite(apiKeyInfo.collaboratorAddress);</span></span>
+<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a>    <span class="co">// update indexedb cache</span></span>
+<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>User Flows:</p>
+<ol type="1">
+<li><p>User toggles Developer Mode - On</p>
+<ol type="1">
+<li><p>Check if the keystore already contains a api access
+portal</p></li>
+<li><p>If not, <code>Mint Api Access Portal</code> portal</p></li>
+<li><p>Update Keystore as explained above in the code blocks</p></li>
+<li><p>Call the satellite package to save the api access portal info</p>
+<ol type="1">
+<li>Portal Address</li>
+<li>Portal Key Seed</li>
+</ol></li>
+<li><p>Save in indexedb cache</p></li>
+</ol></li>
+<li><p>User toggles Developer mode - Off</p>
+<ol type="1">
+<li><p>Remove all collaborators from the api access portal except the
+owner</p></li>
+<li><p>Update key store as explained above in the code blocks</p>
+<ol type="1">
+<li>Set enabled field to false</li>
+</ol></li>
+</ol></li>
+<li><p>User clicks on Generate new api key</p>
+<ol type="1">
+<li>On <code>ApiKeyStoreInstance</code> call the
+<code>addNewApiKey</code> method on the instance</li>
+</ol></li>
+<li><p>User clicks on Remove Api Key</p>
+<ol type="1">
+<li>On <code>ApiKeyStoreInstance</code> call the
+<code>removeApiKey</code> method on the instance</li>
+</ol></li>
+</ol>
+<p>List Api Access Docs:</p>
+<p>This is going to be a fetch call to the satellite package</p>
+ </div> 

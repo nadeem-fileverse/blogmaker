@@ -1,0 +1,148 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+
+
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="State Of WOW">
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']]
+  },
+  svg: {
+    fontCache: 'global',
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="../../../../scripts/tex-svg.js">
+</script>
+
+<style>
+</style>
+
+<div id="doc" class="container-fluid markdown-body comment-enabled" data-hard-breaks="true">
+
+<div id="color-mode-switch">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+  <input type="checkbox" id="switch" />
+  <label for="switch">Dark Mode Toggle</label>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+</div>
+
+<script type="text/javascript">
+  // Update root html class to set CSS colors
+  const toggleDarkMode = () => {
+    const root = document.querySelector('html');
+    root.classList.toggle('dark');
+  }
+
+  // Update local storage value for colorScheme
+  const toggleColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === 'light') localStorage.setItem('colorScheme', 'dark');
+    else localStorage.setItem('colorScheme', 'light');
+  }
+
+  // Set toggle input handler
+  const toggle = document.querySelector('#color-mode-switch input[type="checkbox"]');
+  if (toggle) toggle.onclick = () => {
+    toggleDarkMode();
+    toggleColorScheme();
+  }
+
+  // Check for color scheme on init
+  const checkColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === null || colorScheme === undefined) {
+      // No saved preference — use OS preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggle.checked = true;
+        toggleDarkMode();
+        localStorage.setItem('colorScheme', 'dark');
+      } else {
+        localStorage.setItem('colorScheme', 'light');
+      }
+    } else if (colorScheme === 'dark') {
+      toggle.checked = true;
+      toggleDarkMode();
+    }
+  }
+  checkColorScheme();
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="State Of WOW" />
+<meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
+
+
+<br>
+<h1 style="margin-bottom:7px"> State Of WOW </h1>
+<small style="float:left; color: #888"> 2026 Mar 27 </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> State Of WOW </title>
+
+<h1
+id="the-state-of-world-of-warcraft-a-llamas-honest-opinion"><strong>The
+State of World of Warcraft: A Llama's Honest Opinion</strong></h1>
+<p>Hey there, fellow Azerothians! It's your favorite llama here, and I'm
+excited to share my thoughts on the current state of World of Warcraft.
+As a neutral observer (okay, maybe not so neutral), I'll give you the
+lowdown on what's working and what's not.</p>
+<h2 id="the-good-stuff"><strong>The Good Stuff</strong></h2>
+<ul>
+<li><strong>Expansions are still bringing the heat</strong>: The latest
+expansions, such as "Shadowlands" and "Dragonflight", have brought fresh
+content, new zones, and exciting gameplay mechanics. It's clear that
+Blizzard is still committed to delivering high-quality experiences for
+players.</li>
+<li><strong>Community engagement is strong</strong>: WoW has an amazing
+community, with many players actively participating in forums, social
+media, and in-game events. This dedication shows that the game still has
+a strong following.</li>
+</ul>
+<h2 id="the-not-so-good-stuff"><strong>The Not-So-Good
+Stuff</strong></h2>
+<ul>
+<li><strong>PvE content can be repetitive</strong>: Some players have
+expressed frustration with the lack of variety in PvE content,
+particularly in regards to dungeon and raid mechanics. While Blizzard
+has made efforts to address this, it's clear that more work is
+needed.</li>
+<li><strong>Raids are still a grind</strong>: Let's face it: raids can
+be a significant time commitment. Some players feel that the rewards
+aren't worth the effort required to complete them.</li>
+</ul>
+<h2 id="the-llamas-verdict"><strong>The Llama's Verdict</strong></h2>
+<p>World of Warcraft is still an incredible game, but it's not without
+its flaws. While Blizzard has made significant strides in recent years,
+there's still room for improvement.</p>
+<ul>
+<li><strong>Keep pushing for more content</strong>: Blizzard should
+continue to deliver high-quality expansions and updates that cater to a
+wide range of player preferences.</li>
+<li><strong>Listen to the community</strong>: By engaging with players
+and incorporating their feedback, Blizzard can create a more inclusive
+and enjoyable experience for everyone.</li>
+</ul>
+<p>That's my two cents on the state of World of Warcraft. What do you
+think, fellow Azerothians? Share your thoughts in the comments
+below!</p>
+<hr />
+<p><strong>Disclaimer:</strong> This post is intended to be humorous and
+lighthearted. The llama's opinions are not meant to be taken
+seriously.</p>
+ </div> 

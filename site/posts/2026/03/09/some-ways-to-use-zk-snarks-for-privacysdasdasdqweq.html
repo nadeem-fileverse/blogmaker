@@ -1,0 +1,820 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+
+
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="Some ways to use ZK-SNARKs for privacysdasdasdqweq">
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']]
+  },
+  svg: {
+    fontCache: 'global',
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="../../../../scripts/tex-svg.js">
+</script>
+
+<style>
+</style>
+
+<div id="doc" class="container-fluid markdown-body comment-enabled" data-hard-breaks="true">
+
+<div id="color-mode-switch">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+  <input type="checkbox" id="switch" />
+  <label for="switch">Dark Mode Toggle</label>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+</div>
+
+<script type="text/javascript">
+  // Update root html class to set CSS colors
+  const toggleDarkMode = () => {
+    const root = document.querySelector('html');
+    root.classList.toggle('dark');
+  }
+
+  // Update local storage value for colorScheme
+  const toggleColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === 'light') localStorage.setItem('colorScheme', 'dark');
+    else localStorage.setItem('colorScheme', 'light');
+  }
+
+  // Set toggle input handler
+  const toggle = document.querySelector('#color-mode-switch input[type="checkbox"]');
+  if (toggle) toggle.onclick = () => {
+    toggleDarkMode();
+    toggleColorScheme();
+  }
+
+  // Check for color scheme on init
+  const checkColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === null || colorScheme === undefined) {
+      // No saved preference — use OS preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggle.checked = true;
+        toggleDarkMode();
+        localStorage.setItem('colorScheme', 'dark');
+      } else {
+        localStorage.setItem('colorScheme', 'light');
+      }
+    } else if (colorScheme === 'dark') {
+      toggle.checked = true;
+      toggleDarkMode();
+    }
+  }
+  checkColorScheme();
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Some ways to use ZK-SNARKs for privacysdasdasdqweq" />
+<meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
+
+
+<br>
+<h1 style="margin-bottom:7px"> Some ways to use ZK-SNARKs for privacysdasdasdqweq </h1>
+<small style="float:left; color: #888"> 2026 Mar 09 </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> Some ways to use ZK-SNARKs for privacysdasdasdqweq </title>
+
+<h1
+id="some-ways-to-use-zk-snarks-for-privacysdasdasdqweqweasdasdasdqweqwe">Some
+ways to use ZK-SNARKs for privacysdasdasdqweqweasdasdasdqweqwe</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-ssssss-sadasdqweqeqwe">What does a
+ZK-SNARK do? ssssss sadasdqweqeqwe</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc">Combining ZK-SNARKs with MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.bbbb</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-1">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-1">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-1">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-1">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-2">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-2">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-2">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-2">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-3">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-3">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-3">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-3">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-4">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-4">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-4">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-4">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-5">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-5">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-5">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-5">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-6">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-6">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-6">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-6">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-7">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-7">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-7">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-7">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-8">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-8">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-8">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-8">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-9">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-9">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-9">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-9">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-10">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-10">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<h1 id="some-ways-to-use-zk-snarks-for-privacy-10">Some ways to use
+ZK-SNARKs for privacy</h1>
+<p>ZK-SNARKs are a powerful cryptographic tool, and an increasingly
+important part of the applications that people are building both in the
+blockchain space and beyond. But they are complicated, both in terms of
+<em>how they work</em>, and in terms of <em>how you can use
+them</em>.</p>
+<h2 id="what-does-a-zk-snark-do-10">What does a ZK-SNARK do?</h2>
+<p>Suppose that you have a public input x, a private input w, and a
+(public) function f(x,w)→{True,False} that performs some kind of
+verification on the inputs. With a ZK-SNARK, you can prove that you know
+an w such that f(x,w)=True for some given f and x, without revealing
+what w is. Additionally, the verifier can verify the proof much faster
+than it would take for them to compute f(x,w) themselves, even if they
+know w.</p>
+<p><img
+src="https://vitalik.eth.limo/images/using_snarks/definition.png" /></p>
+<p>This gives the ZK-SNARK its two properties: <strong>privacy</strong>
+and <strong>scalability</strong>. As mentioned above, in this post our
+examples will focus on privacy.</p>
+<h2 id="holding-centralized-parties-accountable-11">Holding centralized
+parties accountable</h2>
+<p>Sometimes, you need to build a scheme that has a central "operator"
+of some kind. This could be for many reasons: sometimes it's for
+scalability, and sometimes it's for privacy - specifically, the privacy
+of data held by the operator.</p>
+<p>The MACI coercion-resistant voting system, for example, requires
+voters to submit their votes on-chain encrypted to a secret key held by
+a central operator. The operator would decrypt all the votes on-chain,
+count them up, and reveal the final result, along with a ZK-SNARK
+proving that they did everything correctly. This extra complexity is
+necessary to ensure a strong privacy property (called
+<strong>coercion-resistance</strong>): that users cannot prove to others
+how they voted even if they wanted to.</p>
+<p>Thanks to blockchains and ZK-SNARKs, the amount of trust in the
+operator can be kept very low. A malicious operator could still break
+coercion resistance, but because votes are published on the blockchain,
+the operator cannot cheat by censoring votes, and because the operator
+must provide a ZK-SNARK, they cannot cheat by mis-calculating the
+result.</p>
+<h2 id="combining-zk-snarks-with-mpc-11">Combining ZK-SNARKs with
+MPC</h2>
+<p>A more advanced use of ZK-SNARKs involves making proofs over
+computations where the inputs are split between two or more parties, and
+we don't want each party to learn the other parties' inputs. You can
+satisfy the privacy requirement with <a
+href="https://vitalik.eth.limo/general/2020/03/21/garbled.html">garbled
+circuits</a> in the 2-party case, and more complicated multi-party
+computation protocols in the N-party case. ZK-SNARKs can be combined
+with these protocols to do verifiable multi-party computation.</p>
+<p>This could enable more advanced reputation systems where multiple
+participants can perform joint computations over their private inputs,
+it could enable privacy-preserving but authenticated data markets, and
+many other applications. That said, note that the math for doing this
+efficiently is still relatively in its infancy.</p>
+<blockquote>
+<p>Read the full article by <a
+href="https://vitalik.eth.limo/general/2021/01/26/snarks.html">Vitalik
+Buterin</a></p>
+</blockquote>
+<p>asdasdasdasdkqwnelqkwnelqwne</p>
+ </div> 
