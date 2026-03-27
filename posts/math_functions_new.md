@@ -1,4 +1,4 @@
-[title]: <> (Math Functions Something Else)
+[title]: <> (Math Functions New)
 [date]: <> (2026/03/27)
 [category]: <> (general)
 
