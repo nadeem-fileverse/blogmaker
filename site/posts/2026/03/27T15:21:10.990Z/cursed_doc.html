@@ -1,0 +1,141 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+
+
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="Cursed Doc">
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']]
+  },
+  svg: {
+    fontCache: 'global',
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="../../../../scripts/tex-svg.js">
+</script>
+
+<style>
+</style>
+
+<div id="doc" class="container-fluid markdown-body comment-enabled" data-hard-breaks="true">
+
+<div id="color-mode-switch">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+  <input type="checkbox" id="switch" />
+  <label for="switch">Dark Mode Toggle</label>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+</div>
+
+<script type="text/javascript">
+  // Update root html class to set CSS colors
+  const toggleDarkMode = () => {
+    const root = document.querySelector('html');
+    root.classList.toggle('dark');
+  }
+
+  // Update local storage value for colorScheme
+  const toggleColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === 'light') localStorage.setItem('colorScheme', 'dark');
+    else localStorage.setItem('colorScheme', 'light');
+  }
+
+  // Set toggle input handler
+  const toggle = document.querySelector('#color-mode-switch input[type="checkbox"]');
+  if (toggle) toggle.onclick = () => {
+    toggleDarkMode();
+    toggleColorScheme();
+  }
+
+  // Check for color scheme on init
+  const checkColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === null || colorScheme === undefined) {
+      // No saved preference — use OS preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggle.checked = true;
+        toggleDarkMode();
+        localStorage.setItem('colorScheme', 'dark');
+      } else {
+        localStorage.setItem('colorScheme', 'light');
+      }
+    } else if (colorScheme === 'dark') {
+      toggle.checked = true;
+      toggleDarkMode();
+    }
+  }
+  checkColorScheme();
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Cursed Doc" />
+<meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
+
+
+<br>
+<h1 style="margin-bottom:7px"> Cursed Doc </h1>
+<small style="float:left; color: #888"> 2026 Mar 27T15:21:10.990Z </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> Cursed Doc </title>
+
+<p><strong>NO THINK</strong></p>
+<p><strong>WARNING: PROCEED WITH CAUTION</strong></p>
+<p>This document is for your eyes only. Do not share, do not discuss,
+and do not attempt to comprehend the contents within.</p>
+<p><strong>THE CURSE OF THE LOST KNOWLEDGE</strong></p>
+<p>In the depths of a forgotten library, hidden away from prying eyes,
+lies a tome bound in black leather. The cover is adorned with strange
+symbols that seem to shift and writhe like living serpents. This is the
+<strong>NO THINK</strong> manual, a guide to unlocking the secrets of
+the universe... or driving you mad.</p>
+<p><strong>THE RITUAL OF FORGETTING</strong></p>
+<p>To begin, find yourself a quiet, isolated spot where you can focus
+your mind without distraction. Take a deep breath and repeat the
+following incantation:</p>
+<p>"I call upon the void to consume my thoughts.<br />
+I surrender my sanity to the abyss.<br />
+Let the darkness claim me, and I shall be reborn."</p>
+<p>As you speak these words, feel your mind begin to unravel. The
+threads of reason and logic snap, leaving only a tangled mess of
+confusion.</p>
+<p><strong>THE PROTOCOL FOR NO THINK</strong></p>
+<ol type="1">
+<li><strong>Forget everything</strong>: Erase all memories, thoughts,
+and experiences from your mind. Start anew, with no recollection of who
+you are or what you've done.</li>
+<li><strong>Obey the void</strong>: Let the darkness guide you. Follow
+its whispers, no matter how absurd or illogical they may seem.</li>
+<li><strong>Repeat the mantra</strong>: Recite the incantation above
+whenever you feel the urge to think. This will help maintain the curse
+and keep your mind in a state of perpetual confusion.</li>
+</ol>
+<p><strong>THE CONSEQUENCES OF THE CURSE</strong></p>
+<p>Those who have attempted to break free from the <strong>NO
+THINK</strong> curse often report experiencing vivid hallucinations,
+paranoia, and an overwhelming sense of dread. Some have even claimed to
+have seen shadowy figures lurking just beyond the edge of
+perception.</p>
+<p><strong>CONCLUSION</strong></p>
+<p>If you're still reading this, congratulations! You've made it past
+the first hurdle. But be warned: once you start down the path of
+<strong>NO THINK</strong>, there's no turning back. The void will
+consume you, and you'll be forever changed.</p>
+<p>So, proceed with caution... or not. The choice is yours.</p>
+ </div> 
