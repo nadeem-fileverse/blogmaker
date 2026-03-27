@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+
+
+
+<link rel="alternate" type="application/rss+xml" href="../../../../feed.xml" title="All About APIs">
+
+
+
+<link rel="stylesheet" type="text/css" href="../../../../css/main.css">
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\(', '\)']]
+  },
+  svg: {
+    fontCache: 'global',
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="../../../../scripts/tex-svg.js">
+</script>
+
+<style>
+</style>
+
+<div id="doc" class="container-fluid markdown-body comment-enabled" data-hard-breaks="true">
+
+<div id="color-mode-switch">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+  <input type="checkbox" id="switch" />
+  <label for="switch">Dark Mode Toggle</label>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+</div>
+
+<script type="text/javascript">
+  // Update root html class to set CSS colors
+  const toggleDarkMode = () => {
+    const root = document.querySelector('html');
+    root.classList.toggle('dark');
+  }
+
+  // Update local storage value for colorScheme
+  const toggleColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === 'light') localStorage.setItem('colorScheme', 'dark');
+    else localStorage.setItem('colorScheme', 'light');
+  }
+
+  // Set toggle input handler
+  const toggle = document.querySelector('#color-mode-switch input[type="checkbox"]');
+  if (toggle) toggle.onclick = () => {
+    toggleDarkMode();
+    toggleColorScheme();
+  }
+
+  // Check for color scheme on init
+  const checkColorScheme = () => {
+    const colorScheme = localStorage.getItem('colorScheme');
+    if (colorScheme === null || colorScheme === undefined) {
+      // No saved preference — use OS preference
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggle.checked = true;
+        toggleDarkMode();
+        localStorage.setItem('colorScheme', 'dark');
+      } else {
+        localStorage.setItem('colorScheme', 'light');
+      }
+    } else if (colorScheme === 'dark') {
+      toggle.checked = true;
+      toggleDarkMode();
+    }
+  }
+  checkColorScheme();
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="All About APIs" />
+<meta name="twitter:image" content="http://vitalik.ca/images/icon.png" />
+
+
+<br>
+<h1 style="margin-bottom:7px"> All About APIs </h1>
+<small style="float:left; color: #888"> 2026 Mar 27 </small>
+<small style="float:right; color: #888"><a href="../../../../index.html">See all posts</a></small>
+<br> <br> <br>
+<title> All About APIs </title>
+
+<h1 id="local-set-up-fileverseapi-package">Local: Set Up <span
+class="citation" data-cites="fileverse/api">@fileverse/api</span>
+package 💛 👩‍💻</h1>
+<p>The <code>@fileverse/api</code> package connects your local terminal
+to your Developer Space. All interactions stay local and end-to-end
+encrypted. Your documents, API calls, and data never leave your
+machine.</p>
+<p><strong>Recommended if:</strong> You're familiar with npm packages
+and want complete control over where your data lives.</p>
+<hr />
+<h2 id="installation">Installation 👩‍🏭</h2>
+<h3 id="option-1-using-npx-recommended">Option 1: Using npx
+(recommended)</h3>
+<p>Run the latest version without installing anything globally:</p>
+<pre class="plaintext"><code>npx @fileverse/api</code></pre>
+<p>This starts the Fileverse API server on port <code>8001</code>,
+allowing API requests to create and manage documents.</p>
+<h3 id="option-2-global-installation">Option 2: Global installation</h3>
+<p>Install the package globally on your system:</p>
+<pre class="plaintext"><code>npm install -g @fileverse/api</code></pre>
+<p>This makes the <code>fileverse-api</code> command available on your
+system.</p>
+<p>To verify the installation run:</p>
+<pre class="plaintext"><code>fileverse-api --help # or -h</code></pre>
+<p>If the installation was successful, you should see help output with a
+list of available options.</p>
+<hr />
+<h2 id="available-tools">Available tools 👩‍🔧</h2>
+<p>When you install <code>@fileverse/api</code>, you get access to two
+command-line tools:</p>
+<ol type="1">
+<li><code>fileverse-api</code>: Starts and runs the Fileverse API server
+(HTTP Server + worker). This is the main server that handles document
+management via REST API.</li>
+<li><code>ddctl</code>: A CLI tool for managing documents directly from
+your terminal. Use <code>ddctl</code> to create, list, view, update, and
+delete documents without making HTTP requests. Run
+<code>ddctl --help</code> to see all available commands. You can learn
+more about <code>ddctl</code> <a
+href="https://docs.fileverse.io/0x2d133a10443a13957278e7dfeefbfee826c82fd8/123#key=pP0g-V_cbId3AhuhejXD3upKmOePKMt5zPYDUAskY9JxVVVJQtyRSk3qUO5joTKy">here</a>.</li>
+</ol>
+<hr />
+<h2 id="running-the-api-server">Running the API Server 👩‍🔬</h2>
+<p>Start the Fileverse API server in your terminal:</p>
+<pre class="plaintext"><code>fileverse-api \
+  --apiKey &lt;API_KEY&gt; \
+  --rpcUrl &lt;RPC_URL&gt; \
+  --port &lt;PORT_NUMBER&gt; \
+  --db &lt;DB_PATH&gt;</code></pre>
+<p>You can also run the command without any flags, in which case the
+program will prompt you for the only mandatory variable which is
+<code>apiKey</code>. The rest will fallback to sensible defaults as
+shown below.</p>
+<ul>
+<li>Default DB_PATH: <code>$HOME/.fileverse/fileverse-api.db</code></li>
+<li>Default PORT_NUMBER: <code>8001</code></li>
+<li>Default RPC_URL: <code>https://rpc.gnosischain.com</code></li>
+</ul>
+<p>Once the required values are provided, <code>@fileverse/api</code>
+will start the server in your terminal. You can then make API requests
+to create and manage documents.</p>
+<hr />
+<h2 id="what-happens-now">What Happens Now 💃</h2>
+<p>With the API server running:</p>
+<ul>
+<li>Your local environment connects to your dDocs Developer Space</li>
+<li>You can create, edit, read, and delete documents via API</li>
+<li>LLMs and external tools can interact with your dDocs through the
+local server</li>
+<li>All data processing happens on your machine</li>
+</ul>
+<hr />
+<h2 id="next-steps">Next Steps 👩‍🚀</h2>
+<p><a
+href="https://docs.fileverse.io/0x2d133a10443a13957278e7dfeefbfee826c82fd8/131#key=8KgIPT-t2uYEjO5maT5_BIRBeMY7nHpSdGSEO1q_RqV7ioWzu-7gHwBdD-xs1K_a"><strong>Use
+your API with LLMs</strong></a><br />
+Connect Claude, ChatGPT, and other LLMs to your local dDocs setup</p>
+<p><a
+href="https://docs.fileverse.io/0x2d133a10443a13957278e7dfeefbfee826c82fd8/117#key=qoZtMrSyMSnQCJn7A7nMNnYIQHeXPgDXNZKzMrqOWVKhAPhmbjbYBpzyMOx5Vsuv"><strong>Switch
+to Cloud</strong></a><br />
+Deploy a cloud-hosted Fileverse API server that runs 24/7</p>
+<hr />
+<h2 id="faq">FAQ 👩‍🏫</h2>
+<h3 id="what-does-fileverseapi-install-on-my-machine">1. What does
+<code>@fileverse/api</code> install on my machine?</h3>
+<p><code>@fileverse/api</code> runs as a lightweight HTTP server and a
+worker on your computer. It stores minimal configuration needed to
+manage your documents. It does not modify system files or interfere with
+existing applications.</p>
+<h3 id="does-the-api-server-run-all-the-time">2. Does the API Server run
+all the time?</h3>
+<p>The API Server runs only while it is actively started.<br />
+When you run <code>fileverse-api</code>, it runs in the foreground and
+remains active as long as the terminal session is open.</p>
+<p>You can stop it at any time (for example, by pressing
+<code>Ctrl+C</code>). Your documents remain intact, and everything
+resumes normally the next time you start the API Server.</p>
+<p>To keep the API Server running continuously, you'll need to keep the
+process running or deploy it using a cloud or managed setup.</p>
+<h3 id="what-data-does-fileverseapi-have-access-to">3. What data does
+<code>@fileverse/api</code> have access to?</h3>
+<p>Only the text you explicitly send to the API server is processed.
+<code>@fileverse/api</code> does not scan your files, monitor activity,
+or access your system without your instruction.</p>
+<h3 id="is-my-data-private">4. Is my data private?</h3>
+<p>Documents are encrypted before being published, which ensures privacy
+by design. <code>@fileverse/api</code> is self-hosted by default, which
+means you control where it runs and what data it handles.</p>
+<h3 id="do-i-need-an-account-or-login-to-use-fileverseapi-locally">5. Do
+I need an account or login to use <code>@fileverse/api</code>
+locally?</h3>
+<p>You need a dDocs account to generate an API key. The API key is
+required for syncing and publishing documents. You generate and control
+this key from your dDocs account, on your developer space.</p>
+<h3 id="does-fileverseapi-work-offline">6. Does
+<code>@fileverse/api</code> work offline?</h3>
+<p>You can create and manage documents locally while offline. Publishing
+or syncing requires an internet connection.</p>
+<h3 id="does-fileverseapi-store-my-data-anywhere">7. Does
+<code>@fileverse/api</code> store my data anywhere?</h3>
+<p><code>@fileverse/api</code> stores your documents (title, content,
+and metadata) in a local SQLite database on your machine. This ensures
+your data stays on your computer and is not uploaded elsewhere.</p>
+<p>By default, the database is created at
+<code>$HOME/.fileverse/fileverse-api.db</code>.</p>
+<p>You can configure the database location using the <code>--db</code>
+flag when running the <code>fileverse-api</code> command.</p>
+<p>For example:</p>
+<pre class="plaintext"><code>fileverse-api --db &lt;DIFFERENT_DB_PATH&gt;</code></pre>
+<h3 id="what-ports-does-fileverseapi-use-can-i-change-them">8. What
+ports does <code>@fileverse/api</code> use? Can I change them?</h3>
+<p><code>@fileverse/api</code> runs a local HTTP server on a
+configurable port. The default port is <code>8001</code>, and you can
+change it if it conflicts with something on your system.</p>
+<p>To run the server on a different port, run</p>
+<pre class="plaintext"><code>fileverse-api --port &lt;DIFFERENT_PORT&gt;</code></pre>
+<h3 id="is-fileverseapi-safe-to-use-on-a-work-machine">9. Is
+<code>@fileverse/api</code> safe to use on a work machine?</h3>
+<p>Yes, <code>@fileverse/api</code> runs locally on your machine without
+requiring administrator access. It only processes data you explicitly
+send to it, and all operations are transparent and under your control.
+Your documents and API keys stay on your device.
+<code>@fileverse/api</code> encrypts your documents before
+publishing.</p>
+<h3
+id="ive-installed-the-package-but-running-fileverse-api-shows-command-not-found">10.
+I've installed the package, but running <code>fileverse-api</code> shows
+"command not found"</h3>
+<p>This usually means the directory where npm installs global
+command-line executables is not included in your <code>$PATH</code>.
+First, find out where npm installs global executables on your system by
+running:</p>
+<pre class="plaintext"><code>npm config get prefix</code></pre>
+<p>Ensure the <code>bin</code> subdirectory of the output directory is
+included in your PATH. For example, if the above command outputs
+<code>/usr/local</code>, then <code>/usr/local/bin</code> should be in
+your PATH.</p>
+<p>After updating your <code>$PATH</code>, restart your terminal and run
+<code>fileverse-api</code> again.</p>
+<hr />
+<p><strong>Need help?</strong> Reach out to us on <a
+href="https://x.com/fileverse">Twitter</a> or hello@fileverse.io 💛</p>
+ </div> 
